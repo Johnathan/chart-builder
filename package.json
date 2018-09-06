@@ -1,4 +1,9 @@
 {
+  "author": {
+    "name": "Johnathan Barrett",
+    "email": "johnathan.barrett@gmail.com",
+    "url": "https://1707.pro"
+  },
   "name": "chart-builder",
   "version": "0.1.0",
   "private": true,
