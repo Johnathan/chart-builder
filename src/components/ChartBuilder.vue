@@ -1,9 +1,8 @@
 <template>
     <div class="hello">
 
-        <DataTable></DataTable>
+        <data-table v-model="chartData"></data-table>
 
-        <hr>
         <hr>
 
         <select v-model="chartType">
@@ -14,18 +13,6 @@
 
         <hr>
 
-        <div class="chart-datasets">
-            <div class="chart-dataset" v-for="dataset in datasets">
-                <input type="text" v-model="dataset.title">
-
-                <h3>Data</h3>
-                <div class="chart-dataset-datum" v-for="(label, index) in labels" >
-                    <input type="text" v-model="labels[index]"/>
-                    <input type="text" v-model="dataset.data[index]"/>
-                </div>
-            </div>
-        </div>
-
         <div class="chart-container">
             <canvas ref="chartCanvas" width="400" height="400"></canvas>
         </div>
@@ -33,74 +20,101 @@
 </template>
 
 <script>
-import Chart from 'chart.js';
-import DataTable from './DataTable';
+    import Chart from 'chart.js';
+    import DataTable from './DataTable';
 
-export default {
-  name: 'ChartBuilder',
-  props: {
-    msg: String,
-  },
-
-  data() {
-    return {
-      chartType: 'bar',
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'Black'],
-      datasets: [
-        {
-          title: 'Number of Votes',
-          data: [0, 4, 20, 24, 20, 4, 0],
+    export default {
+        name: 'ChartBuilder',
+        props: {
+            msg: String,
         },
-      ],
+
+        data() {
+            return {
+                chart: null,
+                labelsRowIndex: 0,
+                datasetNameColumnIndex: 0,
+                chartData: [
+                    [
+                        null,
+                        'Red',
+                        'Blue',
+                        'Green',
+                        'Orange',
+                    ],
+                    [
+                        'Dataset Name',
+                        '10',
+                        '4',
+                        '56',
+                        '21',
+                    ],
+                ],
+
+                chartType: 'bar',
+            };
+        },
+
+        computed: {
+            labels() {
+                return this.chartData[this.labelsRowIndex].filter(label => {
+                    return label;
+                });
+            },
+
+            datasets() {
+                return this.chartData.slice(this.labelsRowIndex + 1).map(dataset => {
+                    return {
+                        label: dataset[this.datasetNameColumnIndex],
+                        data: dataset.slice(this.datasetNameColumnIndex + 1),
+                    };
+                });
+            },
+        },
+
+        methods: {
+            renderChart() {
+                if(this.chart) {
+                    this.chart.destroy();
+                }
+
+                const ctx = this.$refs.chartCanvas;
+                this.chart = new Chart(ctx, {
+                    type: this.chartType,
+                    data: {
+                        labels: this.labels,
+                        datasets: this.datasets,
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [
+                                {
+                                    ticks: {
+                                        beginAtZero: true,
+                                    },
+                                }],
+                        },
+                    },
+                });
+            },
+        },
+
+        mounted() {
+            this.renderChart();
+
+            [
+                'chartData',
+                'chartType',
+                'labels',
+            ].forEach(toWatch => this.$watch(toWatch, () => {
+                this.renderChart();
+            }, {deep: true}));
+        },
+
+        components: {
+            'data-table': DataTable,
+        },
     };
-  },
-
-  methods: {
-    transformDataset(dataset) {
-      return {
-        label: dataset.title,
-        data: dataset.data,
-      };
-    },
-
-    renderChart() {
-      const ctx = this.$refs.chartCanvas;
-      const chart = new Chart(ctx, {
-        type: this.chartType,
-        data: {
-          labels: this.labels,
-          datasets: this.datasets.map(dataset => this.transformDataset(dataset)),
-        },
-        options: {
-          scales: {
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true,
-                },
-              }],
-          },
-        },
-      });
-    },
-  },
-
-  mounted() {
-    this.renderChart();
-
-    [
-      'datasets',
-      'chartType',
-      'labels',
-    ].forEach(toWatch => this.$watch(toWatch, () => {
-      this.renderChart();
-    }, { deep: true }));
-  },
-
-  components: {
-    DataTable,
-  },
-};
 </script>
 
 <style scoped lang="scss">
