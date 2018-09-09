@@ -48,6 +48,7 @@
 </template>
 
 <script>
+    import {ClickOutside} from '../directives/clickOutside';
     export default {
         props: {
             value: {
@@ -146,6 +147,10 @@
                     this.$emit('input', this.internalRows);
                 }
             }
+        },
+
+        directives: {
+            ClickOutside
         }
     };
 </script>
