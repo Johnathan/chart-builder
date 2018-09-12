@@ -38,10 +38,6 @@
                             :ref="`cell-${rowIndex},${cellIndex}`"
                     >
                 </td>
-                <td @click="addColumn()" v-if="rowIndex === 0"><span class="add-cell add-column">Add Column</span></td>
-            </tr>
-            <tr>
-                <td @click="addRow()"><span class="add-cell add-row">Add Row</span></td>
             </tr>
         </table>
     </div>
