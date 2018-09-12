@@ -1,26 +1,6 @@
 <template>
     <div class="data-table">
-
-        <div class="context-menu context-menu-container" :style="contextMenuStyle" v-click-outside="closeContextMenu" @click="closeContextMenu">
-            <ul>
-                <li>Delete Row</li>
-                <li>Delete Column</li>
-                <li>
-                    Insert Row
-                    <ul class="context-menu">
-                        <li @click="addRow(activeRowIndex - 1)">Insert Before</li>
-                        <li @click="addRow(activeRowIndex + 1)">Insert After</li>
-                    </ul>
-                </li>
-                <li>
-                    Insert Column
-                    <ul class="context-menu">
-                        <li @click="addColumn(activeCellIndex - 1)">Insert Before</li>
-                        <li @click="addColumn(activeCellIndex + 1)">Insert After</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+        <context-menu ref="cellContextMenu" :menu-items="cellContextMenuItems"></context-menu>
 
         <table v-click-outside="clickOut">
             <tr v-for="(row, rowIndex) in internalRows">
@@ -44,6 +24,7 @@
 </template>
 
 <script>
+    import ContextMenu from './ContextMenu';
     import {ClickOutside} from '../directives/clickOutside';
     export default {
         props: {
@@ -60,7 +41,44 @@
         },
         data() {
             return {
-                contextMenuStyle: {},
+                cellContextMenuItems: [
+                    {
+                        label: 'Delete Row',
+                        disabled: true,
+                        handler: () => console.log('Deleting Row')
+                    },
+                    {
+                        label: 'Delete Column',
+                        disabled: true,
+                        handler: () => console.log('Deleting Column')
+                    },
+                    {
+                        label: 'Insert Row',
+                        children: [
+                            {
+                                label: 'Insert Before',
+                                handler: () => this.addRow(this.activeRowIndex)
+                            },
+                            {
+                                label: 'Insert After',
+                                handler: () => this.addRow(this.activeRowIndex + 1)
+                            },
+                        ]
+                    },
+                    {
+                        label: 'Insert Column',
+                        children: [
+                            {
+                                label: 'Insert Before',
+                                handler: () => this.addColumn(this.activeCellIndext)
+                            },
+                            {
+                                label: 'Insert After',
+                                handler: () => this.addColumn(this.activeCellIndex + 1)
+                            },
+                        ]
+                    }
+                ],
                 activeRowIndex: null,
                 activeCellIndex: null,
                 internalRows: [],
@@ -76,18 +94,12 @@
         },
 
         methods: {
-            closeContextMenu() {
-                this.contextMenuStyle = {
-                    display: 'none'
-                };
-            },
-
             showContextMenu(event) {
-                this.contextMenuStyle = {
-                    display: 'block',
-                    left: event.pageX + 'px',
-                    top: event.pageY + 'px',
-                };
+                console.log({
+                    activeRowIndex: this.activeRowIndex,
+                    activeCellIndex: this.activeCellIndex
+                });
+                this.$refs.cellContextMenu.open(event);
             },
 
             gotoCell(cell) {
@@ -145,6 +157,10 @@
             }
         },
 
+        components: {
+          'context-menu': ContextMenu
+        },
+
         directives: {
             ClickOutside
         }
@@ -159,6 +175,11 @@
 
     td {
         text-align: left;
+        cursor: cell;
+
+        input {
+            cursor: cell;
+        }
     }
 
     .active-cell {
@@ -174,60 +195,5 @@
         padding: 0.2em .1em;
         text-align: center;
         cursor: pointer;
-    }
-
-    // Context Menu Stuff, should probably move this somewhere else.
-    $context-menu-border-radius: 4px;
-
-    .context-menu-container {
-        display: none;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-        font-size: .8em;
-        position: absolute;
-        user-select: none;
-    }
-
-    .context-menu {
-        background: #e4e4e4;
-        border-radius: $context-menu-border-radius;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
-
-        ul {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-
-            :first-child {
-                border-top-right-radius: $context-menu-border-radius;
-                border-top-left-radius: $context-menu-border-radius;
-            }
-
-            :last-child {
-                border-bottom-right-radius: $context-menu-border-radius;
-                border-bottom-left-radius: $context-menu-border-radius;
-            }
-
-
-            li {
-                position: relative;
-                padding: .5em 1em;
-                cursor: pointer;
-
-                ul {
-                    display: none;
-                }
-
-                &:hover {
-                    background: rgba(0,0,0,0.1);
-                    > ul {
-                        position: absolute;
-                        left: 102%;
-                        top: 0;
-                        display: block;
-                        width: 100%;
-                    }
-                }
-            }
-        }
     }
 </style>
