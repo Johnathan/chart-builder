@@ -2,6 +2,8 @@
     <div class="hello">
 
         <data-table v-model="chartData"></data-table>
+        <hr>
+        <data-table></data-table>
 
         <hr>
 

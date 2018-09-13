@@ -2,9 +2,10 @@
     <div class="data-table">
         <context-menu ref="cellContextMenu" :menu-items="cellContextMenuItems"></context-menu>
 
+        <div class="border" :style="borderStyle"></div>
         <table v-click-outside="clickOut">
             <tr v-for="(row, rowIndex) in internalRows">
-                <td v-for="(cellValue, cellIndex) in row">
+                <td v-for="(cellValue, cellIndex) in row" :class="`cell-${rowIndex}_${cellIndex}`">
                     <input
                             type="text"
                             v-model="row[cellIndex]"
@@ -24,7 +25,9 @@
 </template>
 
 <script>
-    import ContextMenu from './ContextMenu';
+
+    import ContextMenu from 'vue-context-menu-popup';
+    import 'vue-context-menu-popup/dist/vue-context-menu-popup.css';
     import {ClickOutside} from '../directives/clickOutside';
     export default {
         props: {
@@ -104,6 +107,7 @@
 
             gotoCell(cell) {
                 const {rowIndex, cellIndex} = cell;
+
                 if(typeof this.internalRows[rowIndex] !== 'undefined' && typeof this.internalRows[rowIndex][cellIndex] !== 'undefined') {
                     this.activeRowIndex = rowIndex;
                     this.activeCellIndex = cellIndex;
@@ -148,6 +152,30 @@
             },
         },
 
+        computed: {
+            borderStyle() {
+                    if(this.activeRowIndex !== null && this.activeCellIndex !== null)
+                    {
+                        const activeCellBoundingRect = this.$el.
+                            querySelector(`.cell-${this.activeRowIndex}_${this.activeCellIndex}`)
+                            .getBoundingClientRect();
+
+                        return {
+                            width: activeCellBoundingRect.width - 1 + 'px',
+                            height: activeCellBoundingRect.height - 1 + 'px',
+                            left: (activeCellBoundingRect.x - 2) + 'px',
+                            top: (activeCellBoundingRect.y - 2) + 'px',
+                        }
+                    }
+                    else
+                    {
+                        return {
+                            display: 'none',
+                        }
+                    }
+            }
+        },
+
         watch: {
             internalRows: {
                 deep: true,
@@ -168,32 +196,39 @@
 </script>
 
 <style scoped lang="scss">
+
+    .border {
+        border: 3px solid #0d8fff;
+        width: 97%;
+        height: 81%;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
     table {
         border-collapse: collapse;
-        border-spacing: 0px;
+        width: 100%;
     }
 
     td {
         text-align: left;
         cursor: cell;
+        border: 1px solid #e4e4e4;
+        padding: 0;
 
         input {
             cursor: cell;
+            border: none;
+            outline: none;
+            padding: 2px;
+            width: calc(100% - 4px);
         }
     }
 
-    .active-cell {
-        outline: 3px solid #0d8fff;
-    }
-
-    .add-cell {
-        background: #d1d1d1;
-        color: #0d8fff;
-        font-family: sans-serif;
-        font-size: 0.8em;
-        display: block;
-        padding: 0.2em .1em;
-        text-align: center;
-        cursor: pointer;
+    .border {
+        transition: all;
+        transition-duration: 150ms;
+        pointer-events: none;
     }
 </style>
