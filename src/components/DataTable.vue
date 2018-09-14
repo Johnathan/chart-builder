@@ -47,24 +47,22 @@
                 cellContextMenuItems: [
                     {
                         label: 'Delete Row',
-                        disabled: true,
-                        handler: () => console.log('Deleting Row')
+                        handler: () => this.deleteRow(this.activeRowIndex)
                     },
                     {
                         label: 'Delete Column',
-                        disabled: true,
-                        handler: () => console.log('Deleting Column')
+                        handler: () => this.deleteColumn(this.activeCellIndex)
                     },
                     {
                         label: 'Insert Row',
                         children: [
                             {
                                 label: 'Insert Before',
-                                handler: () => this.addRow(this.activeRowIndex)
+                                handler: () => this.insertRow(this.activeRowIndex)
                             },
                             {
                                 label: 'Insert After',
-                                handler: () => this.addRow(this.activeRowIndex + 1)
+                                handler: () => this.insertRow(this.activeRowIndex + 1)
                             },
                         ]
                     },
@@ -73,11 +71,11 @@
                         children: [
                             {
                                 label: 'Insert Before',
-                                handler: () => this.addColumn(this.activeCellIndex)
+                                handler: () => this.insertColumn(this.activeCellIndex)
                             },
                             {
                                 label: 'Insert After',
-                                handler: () => this.addColumn(this.activeCellIndex + 1)
+                                handler: () => this.insertColumn(this.activeCellIndex + 1)
                             },
                         ]
                     }
@@ -127,7 +125,7 @@
                 };
             },
 
-            addRow(atPosition = this.internalRows.length) {
+            insertRow(atPosition = this.internalRows.length) {
                 if(atPosition < 0)
                 {
                     atPosition = 0;
@@ -138,7 +136,7 @@
                 this.gotoCell({rowIndex: this.activeRowIndex, cellIndex: this.activeCellIndex});
             },
 
-            addColumn(atPosition = this.internalRows[0].length) {
+            insertColumn(atPosition = this.internalRows[0].length) {
                 if(atPosition < 0)
                 {
                     atPosition = 0;
@@ -150,6 +148,16 @@
                 });
                 this.gotoCell({rowIndex: this.activeRowIndex, cellIndex: this.activeCellIndex});
             },
+
+            deleteRow(atPosition) {
+                this.internalRows.splice(atPosition, 1);
+            },
+
+            deleteColumn(atPosition) {
+                this.internalRows.map(row => {
+                    row.splice(atPosition, 1);
+                });
+            }
         },
 
         computed: {
