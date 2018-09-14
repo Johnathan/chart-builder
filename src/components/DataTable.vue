@@ -73,7 +73,7 @@
                         children: [
                             {
                                 label: 'Insert Before',
-                                handler: () => this.addColumn(this.activeCellIndext)
+                                handler: () => this.addColumn(this.activeCellIndex)
                             },
                             {
                                 label: 'Insert After',
