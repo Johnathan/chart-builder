@@ -16,6 +16,8 @@
                             @keydown.down.prevent="gotoCell({rowIndex: rowIndex + 1, cellIndex})"
                             @keydown.left.prevent="gotoCell({rowIndex, cellIndex: cellIndex - 1})"
                             @keydown.right.prevent="gotoCell({rowIndex, cellIndex: cellIndex + 1})"
+                            @keydown.tab.prevent="gotoCell({rowIndex, cellIndex: cellIndex + 1})"
+                            @keydown.shift.tab.prevent="gotoCell({rowIndex, cellIndex: cellIndex - 1})"
                             :ref="`cell-${rowIndex},${cellIndex}`"
                     >
                 </td>
@@ -25,10 +27,10 @@
 </template>
 
 <script>
-
     import ContextMenu from 'vue-context-menu-popup';
     import 'vue-context-menu-popup/dist/vue-context-menu-popup.css';
     import {ClickOutside} from '../directives/clickOutside';
+
     export default {
         props: {
             value: {
@@ -204,7 +206,6 @@
 </script>
 
 <style scoped lang="scss">
-
     .border {
         border: 3px solid #0d8fff;
         width: 97%;

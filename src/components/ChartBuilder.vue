@@ -10,6 +10,7 @@
             <option value="bar">Bar</option>
             <option value="pie">Pie</option>
             <option value="line">Line</option>
+            <option value="radar">Radar</option>
         </select>
 
         <hr>
